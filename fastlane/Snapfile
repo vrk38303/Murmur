@@ -1,0 +1,32 @@
+# Fastlane Snapfile for Murmur. Drives the MurmurUITests UI test bundle on the
+# iOS Simulator and writes PNGs into fastlane/screenshots/.
+#
+# Conversion plan: SCREENSHOT_PLAN.md. The 6.9" iPhone 16 Pro Max set is the
+# source of truth — Apple auto-derives 6.7"/6.5" sizes from it.
+
+devices([
+  "iPhone 16 Pro Max"
+])
+
+languages([
+  "en-US"
+])
+
+# Scheme that builds the app + the UI test bundle.
+scheme("Murmur")
+
+# Where snapshot writes the PNGs.
+output_directory("./fastlane/screenshots")
+
+# Reset before each run so a stale screenshot can never sneak into the upload.
+clear_previous_screenshots(true)
+
+# Wait until the simulator is settled before snapping. Murmur's mind-map
+# layout has a brief animate-in; without this, frame 3 catches it mid-settle.
+launch_arguments(["-MurmurSeedScreenshots"])
+
+# Don't rebuild between locales — we ship one for v1.
+reinstall_app(true)
+
+# Status-bar override (clean signal/wifi/9:41) for App Store-quality output.
+override_status_bar(true)

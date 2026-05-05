@@ -1,0 +1,23 @@
+title: Murmur
+description: A private on-device voice-note recorder. Conversations, kept quietly.
+theme: minima
+show_excerpts: false
+
+minima:
+  skin: auto
+  social_links: []
+
+header_pages:
+  - privacy.md
+
+defaults:
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: page
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock

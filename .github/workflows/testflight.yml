@@ -1,0 +1,91 @@
+name: Build & Ship to TestFlight
+
+# Triggers:
+#   - push of a tag like v1.2.3 → build, sign, upload to TestFlight
+#   - manual dispatch from the GitHub Actions UI for ad-hoc builds
+#
+# This is the entire path from Windows to TestFlight. The runner is a hosted
+# macOS image; you never need a Mac yourself.
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Why are you building?'
+        required: false
+        default: 'manual'
+
+jobs:
+  build:
+    name: Archive & upload
+    runs-on: macos-15           # Apple silicon runner, Xcode 16 preinstalled
+    timeout-minutes: 45
+
+    env:
+      # Required GitHub repository secrets — set them in
+      # Settings → Secrets and variables → Actions:
+      #
+      # APP_STORE_CONNECT_KEY_ID         e.g. ABCD1234EF
+      # APP_STORE_CONNECT_ISSUER_ID      e.g. 69a6de7e-... (a UUID)
+      # APP_STORE_CONNECT_KEY_P8         the entire .p8 file contents
+      # MATCH_PASSWORD                   passphrase for the match-encrypted certs repo
+      # MATCH_GIT_URL                    e.g. https://github.com/<you>/murmur-certs.git
+      # MATCH_GIT_BASIC_AUTH             base64("<gh-username>:<gh-pat-with-repo-scope>")
+      # KEYCHAIN_PASSWORD                any random string; used inside the runner
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Pin Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app
+
+      - name: Install XcodeGen + Fastlane
+        run: |
+          brew install xcodegen
+          gem install bundler
+          bundle install --gemfile=Gemfile
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Run unit tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -scheme Murmur \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -resultBundlePath TestResults.xcresult | xcpretty
+
+      - name: Restore signing material via Fastlane Match
+        env:
+          MATCH_PASSWORD:        ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL:         ${{ secrets.MATCH_GIT_URL }}
+          MATCH_GIT_BASIC_AUTH:  ${{ secrets.MATCH_GIT_BASIC_AUTH }}
+          KEYCHAIN_PASSWORD:     ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: bundle exec fastlane ios certificates
+
+      - name: Build, archive, upload to TestFlight
+        env:
+          APP_STORE_CONNECT_KEY_ID:    ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_P8:    ${{ secrets.APP_STORE_CONNECT_KEY_P8 }}
+          MATCH_PASSWORD:              ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL:               ${{ secrets.MATCH_GIT_URL }}
+          MATCH_GIT_BASIC_AUTH:        ${{ secrets.MATCH_GIT_BASIC_AUTH }}
+        run: bundle exec fastlane ios beta
+
+      - name: Upload xcresult artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults
+          path: TestResults.xcresult
+          retention-days: 14

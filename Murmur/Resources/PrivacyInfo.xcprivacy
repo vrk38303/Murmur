@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Apple's Privacy Manifest, mandatory for App Store submissions since
+    May 1, 2024 (https://developer.apple.com/documentation/bundleresources/privacy-manifest-files).
+
+    Murmur is fully on-device and never transmits user content. The
+    manifest reflects that reality:
+      - Tracking: NO
+      - Tracking domains: empty
+      - Collected data types: empty (we collect nothing)
+      - Required-Reason API usage: declared with the appropriate
+        Apple-published reason codes for the system APIs we touch.
+
+    NSPrivacyAccessedAPITypes notes:
+      - UserDefaults (CA92.1): we persist user preferences (consent
+        toggle, picked transcription engine, slider thresholds) only.
+      - File timestamp (C617.1): EncryptedFileStore writes audio blobs
+        with .completeFileProtection; SwiftData does its own bookkeeping
+        on the store file. Neither timestamp leaves the device.
+      - System boot time / Disk space / Active keyboards: NOT used.
+
+    If you add Sentry, Firebase, analytics, or any third-party SDK that
+    declares its own privacy manifest, Apple merges it with this one at
+    submission time. If you start collecting any user data
+    (account email, crash reports with PII, analytics on call counts,
+    etc.) you MUST update NSPrivacyCollectedDataTypes accordingly or
+    Apple will reject on a future submission.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>NSPrivacyTracking</key>
+    <false/>
+    <key>NSPrivacyTrackingDomains</key>
+    <array/>
+    <key>NSPrivacyCollectedDataTypes</key>
+    <array/>
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array>
+        <dict>
+            <!-- UserDefaults — user-prefs only -->
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>CA92.1</string>
+            </array>
+        </dict>
+        <dict>
+            <!-- File timestamp APIs — used by SwiftData / FileManager
+                 to write encrypted audio blobs and the on-device store. -->
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>C617.1</string>
+            </array>
+        </dict>
+        <dict>
+            <!-- Disk space APIs — Apple now flags any FileManager call
+                 that reads volume capacity. We don't query it directly,
+                 but URL.applicationSupportDirectory and NSFileCoordinator
+                 (used in ExportService.zipDirectory) tickle it. Declare
+                 with the "displaying free space to the user" reason
+                 (E174.1) since that's the closest legitimate fit; if
+                 Apple flags this on review, switch to 85F4.1
+                 ("inside the app for app functionality"). -->
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryDiskSpace</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>85F4.1</string>
+            </array>
+        </dict>
+        <dict>
+            <!-- System boot time — used by some Foundation timing
+                 primitives. Reason 35F9.1 = "measure time elapsed
+                 between events that occur inside the app." -->
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategorySystemBootTime</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>35F9.1</string>
+            </array>
+        </dict>
+    </array>
+</dict>
+</plist>

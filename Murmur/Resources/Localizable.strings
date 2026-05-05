@@ -1,0 +1,89 @@
+/* Onboarding */
+"onb.welcome.title" = "Murmur";
+"onb.welcome.tagline" = "Conversations,\nkept quietly.";
+"onb.welcome.footer" = "Every call stays on this device.";
+"onb.welcome.cta" = "Continue";
+"onb.perms.step" = "Step 2 of 3";
+"onb.perms.title" = "Three quick\npermissions.";
+"onb.perms.body" = "Each one stays local. Murmur cannot send anything off your phone.";
+"onb.perms.mic.title" = "Microphone";
+"onb.perms.mic.sub" = "To capture audio when you start a recording.";
+"onb.perms.speech.title" = "Speech recognition";
+"onb.perms.speech.sub" = "Used on device to transcribe. Audio never leaves your phone.";
+"onb.perms.contacts.title" = "Contacts";
+"onb.perms.contacts.sub" = "So calls show the right name. Optional.";
+"onb.perms.allow" = "Allow";
+"onb.consent.step" = "Step 3 of 3";
+"onb.consent.title" = "You start every recording.";
+"onb.consent.body" = "Murmur never records without you tapping. Once you do, we'll remind you to ask the other person for consent. It's the law in some places, and the right thing everywhere else.";
+"onb.consent.cta" = "I understand";
+"onb.consent.guide" = "Read the full consent guide";
+
+/* Calls */
+"calls.title" = "Calls";
+"calls.thisweek" = "This week";
+"calls.search" = "Search calls";
+"calls.processing" = "Processing";
+"calls.empty.title" = "Nothing to listen back to yet";
+"calls.empty.body" = "Tap the plus to record your first call. Everything stays on this device.";
+
+/* Recording */
+"rec.sheet.kicker" = "Start a recording";
+"rec.sheet.title" = "Ask first, then tap.";
+"rec.sheet.body" = "\"Is it OK if I record this for my notes?\" Murmur waits until you say yes.";
+"rec.sheet.why" = "Why we ask";
+"rec.sheet.primer" = "Consent law primer";
+"rec.live.label" = "Recording";
+"rec.live.transcribing" = "Live · transcribing on device";
+"rec.proc.title" = "Processing on device";
+"rec.proc.body" = "Transcribing, summarizing, and weaving into your map. About 12 seconds.";
+"rec.proc.transcribed" = "Transcribed";
+"rec.proc.summarized" = "Summarized";
+"rec.proc.linked" = "Linked to map";
+
+/* Detail */
+"detail.back" = "Calls";
+"detail.seg.summary" = "Summary";
+"detail.seg.transcript" = "Transcript";
+"detail.seg.map" = "Map";
+"detail.summary.kicker" = "Summary";
+"detail.keypoints.kicker" = "Key points";
+"detail.actions.kicker" = "Action items";
+"detail.quote.kicker" = "Pull quote";
+"detail.connections.kicker" = "Connections";
+
+/* Mind map */
+"map.filter.all" = "All";
+"map.filter.people" = "People";
+"map.filter.topics" = "Topics";
+
+/* Settings */
+"settings.title" = "Settings";
+"settings.section.ondevice" = "On-device";
+"settings.section.recording" = "Recording";
+"settings.section.appearance" = "Appearance";
+"settings.section.about" = "About";
+"settings.section.transcription" = "Transcription";
+"settings.section.summarization" = "Summarization";
+"settings.section.mindmap" = "Mind map";
+"settings.section.privacy" = "Privacy";
+"settings.privacy.label" = "Privacy";
+"settings.privacy.value" = "On-device only";
+"settings.export" = "Export library";
+"settings.deleteall" = "Delete all data";
+"settings.deleteall.confirm" = "This deletes every call, transcript, summary, and connection on this device. There is no undo.";
+"settings.consent.label" = "Consent reminder";
+"settings.darkmode" = "Dark mode";
+"settings.footer" = "Murmur 1.0.0 · Built quietly";
+
+/* Tabs */
+"tab.calls" = "Calls";
+"tab.map" = "Mind Map";
+"tab.settings" = "Settings";
+
+/* Errors */
+"error.generic" = "Something went wrong. Try again.";
+"error.permission.mic" = "Microphone access is required to record. Open Settings to enable it.";
+"error.permission.speech" = "Speech recognition is required for transcription.";
+"error.transcription.unavailable" = "On-device transcription isn't available for your locale yet. Open Settings → General → Keyboard → Dictation, turn on Dictation, and confirm a language is downloaded under Settings → General → Language & Region → On-Device Dictation.";
+"error.summarization.unavailable" = "Summarization isn't available. Enable Apple Intelligence or download the bundled model.";

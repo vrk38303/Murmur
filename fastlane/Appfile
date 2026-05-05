@@ -1,0 +1,10 @@
+# Bundle id and team config used by every lane.
+# Must match what's in project.yml under PRODUCT_BUNDLE_IDENTIFIER.
+
+app_identifier("app.murmur.Murmur")
+
+# These are read at runtime from environment / GitHub secrets.
+# Set them in App Store Connect → Users and Access → Keys.
+apple_id(ENV["APPLE_ID"]) if ENV["APPLE_ID"]
+itc_team_id(ENV["APP_STORE_CONNECT_TEAM_ID"]) if ENV["APP_STORE_CONNECT_TEAM_ID"]
+team_id(ENV["DEVELOPER_PORTAL_TEAM_ID"]) if ENV["DEVELOPER_PORTAL_TEAM_ID"]

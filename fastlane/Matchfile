@@ -1,0 +1,17 @@
+# Fastlane Match config — manages your signing certificates and provisioning
+# profiles in a *separate* private git repo, encrypted with MATCH_PASSWORD.
+#
+# This is the trick that lets a Windows user manage iOS signing: the certs
+# live in git, the GitHub Actions macOS runner pulls them, and you never
+# touch a Mac.
+#
+# One-time setup (see PUBLISHING.md): create an empty private GitHub repo
+# called something like `murmur-certs`, then run `fastlane match init`
+# inside this project from any macOS box (including a 1-hour MacInCloud
+# session). After that, GitHub Actions handles everything.
+
+git_url(ENV["MATCH_GIT_URL"])
+storage_mode("git")
+type("appstore") # appstore | adhoc | development
+app_identifier(["app.murmur.Murmur"])
+username(ENV["APPLE_ID"]) if ENV["APPLE_ID"]

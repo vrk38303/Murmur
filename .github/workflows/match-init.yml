@@ -1,0 +1,69 @@
+# One-time Match init for Murmur — true zero-Mac signing setup.
+#
+# DELETE THIS FILE AFTER ONE SUCCESSFUL RUN. Leaving it in the repo lets any
+# repo collaborator overwrite the App Store distribution certificate by
+# clicking "Run workflow," which is exactly the kind of foot-gun we don't
+# want sitting around.
+#
+# What it does (PUBLISHING.md step 8 option D):
+#   1. Boots a macOS-15 runner.
+#   2. `bundle install` to get Fastlane.
+#   3. Logs in to Apple Developer with $APPLE_ID + $FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD.
+#   4. `fastlane match appstore` mints a distribution cert + provisioning profile,
+#      encrypts both with $MATCH_PASSWORD, and pushes them to $MATCH_GIT_URL.
+#
+# After a green run:
+#   - The encrypted cert + profile are sitting in vrk38303/murmur-certs.
+#   - All future TestFlight builds (`.github/workflows/testflight.yml`) read
+#     them via `fastlane match appstore --readonly`.
+#   - You should DELETE this file: `git rm .github/workflows/match-init.yml && git commit && git push`.
+#
+# Required GitHub Secrets (Settings → Secrets and variables → Actions):
+#   - APPLE_ID                                    your Apple Developer email
+#   - APPLE_APP_SPECIFIC_PASSWORD                 from https://account.apple.com/account/manage → App-Specific Passwords
+#   - MATCH_PASSWORD                              the 24+ char passphrase you picked
+#   - MATCH_GIT_URL                               https://github.com/vrk38303/murmur-certs.git
+#   - MATCH_GIT_BASIC_AUTH                        base64("<gh-username>:<PAT-with-write-on-murmur-certs>")
+#   - APP_STORE_CONNECT_KEY_ID                    from App Store Connect API key
+#   - APP_STORE_CONNECT_ISSUER_ID                 from App Store Connect API key
+#   - APP_STORE_CONNECT_KEY_P8                    full .p8 file contents
+#
+# If the run fails with "2FA required," your APPLE_APP_SPECIFIC_PASSWORD is
+# missing or wrong. Regenerate at https://account.apple.com/account/manage.
+
+name: One-time Match init (DELETE AFTER USE)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  init:
+    runs-on: macos-15
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+
+      - name: Initialize Match (creates cert + profile, pushes to murmur-certs)
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_GIT_BASIC_AUTH: ${{ secrets.MATCH_GIT_BASIC_AUTH }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_P8: ${{ secrets.APP_STORE_CONNECT_KEY_P8 }}
+        run: |
+          bundle exec fastlane run match \
+            type:appstore \
+            app_identifier:app.murmur.Murmur \
+            shallow_clone:true \
+            readonly:false
