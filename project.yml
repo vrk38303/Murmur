@@ -1,0 +1,107 @@
+name: Murmur
+options:
+  bundleIdPrefix: app.murmur
+  deploymentTarget:
+    iOS: "18.0"
+  developmentLanguage: en
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    IPHONEOS_DEPLOYMENT_TARGET: "18.0"
+    TARGETED_DEVICE_FAMILY: "1"            # iPhone only at v1
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    CLANG_ENABLE_MODULES: YES
+    SWIFT_STRICT_CONCURRENCY: complete
+  configs:
+    Debug:
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: "DEBUG"
+    Release:
+      # Flip ON (append " MURMUR_PAYWALL_ENABLED") once StoreKit products
+      # are configured in App Store Connect → Monetization → Subscriptions
+      # AND a real subscription tier override has been wired into
+      # SubscriptionService. Until then the paywall is unreachable — see
+      # CallsListViewModel.tapAdd() and SubscriptionService.swift:52-66.
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: ""
+
+targets:
+  Murmur:
+    type: application
+    platform: iOS
+    sources:
+      - path: Murmur
+    resources:
+      - Murmur/Resources/Assets.xcassets
+      - Murmur/Resources/Localizable.strings
+      # Privacy Manifest — mandatory for App Store submissions since
+      # May 1, 2024. See Murmur/Resources/PrivacyInfo.xcprivacy for
+      # what we declare and why.
+      - Murmur/Resources/PrivacyInfo.xcprivacy
+    info:
+      path: Murmur/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: Murmur
+        CFBundleShortVersionString: "1.0.0"
+        CFBundleVersion: "1"
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UIBackgroundModes:
+          - audio
+        NSMicrophoneUsageDescription: "Murmur needs the microphone to record calls and meetings you choose to capture. Audio stays on this device."
+        NSSpeechRecognitionUsageDescription: "Murmur transcribes recordings on-device using Apple's speech engine. No audio leaves your phone."
+        NSContactsUsageDescription: "Murmur uses your contacts to label calls with the right name. This is optional and stays on this device."
+        NSFaceIDUsageDescription: "Murmur uses Face ID to confirm destructive actions like deleting all your data."
+        ITSAppUsesNonExemptEncryption: false
+        UIRequiredDeviceCapabilities:
+          - arm64
+          - microphone
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        LSRequiresIPhoneOS: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.murmur.Murmur
+        INFOPLIST_FILE: Murmur/Resources/Info.plist
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_HARDENED_RUNTIME: YES
+        SWIFT_OBJC_BRIDGING_HEADER: ""
+    dependencies: []
+
+  MurmurTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [MurmurTests]
+    dependencies:
+      - target: Murmur
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.murmur.MurmurTests
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/Murmur.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Murmur
+
+  MurmurUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [MurmurUITests]
+    dependencies:
+      - target: Murmur
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.murmur.MurmurUITests
+        TEST_TARGET_NAME: Murmur
+
+schemes:
+  Murmur:
+    build:
+      targets:
+        Murmur: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - MurmurTests
+        - MurmurUITests
+    archive:
+      config: Release
