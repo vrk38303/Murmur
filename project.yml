@@ -78,6 +78,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.murmur.MurmurTests
+        GENERATE_INFOPLIST_FILE: YES
         TEST_HOST: $(BUILT_PRODUCTS_DIR)/Murmur.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Murmur
 
   MurmurUITests:
@@ -89,6 +90,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.murmur.MurmurUITests
+        GENERATE_INFOPLIST_FILE: YES
         TEST_TARGET_NAME: Murmur
 
 schemes:
