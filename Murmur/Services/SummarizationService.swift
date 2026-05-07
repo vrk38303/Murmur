@@ -169,11 +169,12 @@ actor SummarizationService: SummarizationServiceProtocol {
     }
 
     static func heuristicKeyPoints(prompt: String) -> [String] {
-        prompt.split(whereSeparator: { ".!?\n".contains($0) })
-            .map { $0.trimmingCharacters(in: .whitespaces) }
-            .filter { $0.count > 12 && $0.count < 80 }
-            .prefix(4)
-            .map(String.init)
+        let chunks = prompt.split(whereSeparator: { ".!?\n".contains($0) })
+        let sentences = chunks.map { $0.trimmingCharacters(in: .whitespaces) }
+        let candidates = sentences.filter { sentence in
+            sentence.count > 12 && sentence.count < 80
+        }
+        return candidates.prefix(4).map { String($0) }
     }
 
     // MARK: - JSON parsing
