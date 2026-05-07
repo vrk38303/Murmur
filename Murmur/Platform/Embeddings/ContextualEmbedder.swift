@@ -21,22 +21,11 @@ struct ContextualEmbedder {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return Array(repeating: 0, count: Self.dimension) }
 
-        if let model = embedding,
-           let result = try? model.embeddingResult(for: trimmed, language: .english) {
-            var pooled = [Double](repeating: 0, count: result.embedding.dimension)
-            var n = 0
-            result.enumerateTokenVectors(in: trimmed.startIndex..<trimmed.endIndex) { vec, _ in
-                if vec.count == pooled.count {
-                    for i in 0..<pooled.count { pooled[i] += vec[i] }
-                    n += 1
-                }
-                return true
-            }
-            if n > 0 {
-                for i in 0..<pooled.count { pooled[i] /= Double(n) }
-            }
-            return Self.resize(pooled, to: Self.dimension)
-        }
+        // Xcode 16.4's NaturalLanguage API surface does not expose stable
+        // token-vector access for NLContextualEmbeddingResult across all
+        // deployment SDKs. Keep the system model loaded above so this wrapper
+        // can grow into it later, but use the deterministic local vector for
+        // v1/CI instead of blocking App Store builds on an SDK-specific shape.
         return Self.fallbackHashVector(trimmed)
     }
 
