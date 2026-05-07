@@ -1,6 +1,6 @@
 # Murmur Launch Execution Status
 
-Last updated: 2026-05-05
+Last updated: 2026-05-07
 
 ## Completed in this session
 
@@ -10,16 +10,24 @@ Last updated: 2026-05-05
 - Confirmed the GitHub account available through the connector is `vrk38303`.
 - Repaired the local `.git` directory enough to fetch `origin/main` from `https://github.com/vrk38303/Murmur.git`.
 - Verified remote `origin/main` currently does not contain the local app source directories, `.github/workflows`, `docs`, or `fastlane`.
+- Pushed the local app source, tests, docs site, Fastlane config, and GitHub Actions workflows to PR #2.
+- Fixed CI blockers in PR #2:
+  - pinned workflows to installed Xcode 16.4 / iOS 18.5 simulator runtime,
+  - generated Info.plists for test bundles,
+  - avoided an unavailable `NLContextualEmbeddingResult.embedding` API,
+  - simplified heuristic summary key point extraction,
+  - scoped smoke builds to unit tests so screenshot UI tests run only through the screenshot lane.
+- Confirmed GitHub Actions PR Tests run #7 passed on commit `905a6e3ae7f0d166a128a14240ab50673096c067`.
 
 ## Blocked
 
-- Apple Developer/App Store Connect browser work is blocked in this Codex Desktop session because the Browser Use Node runtime is resolving to `C:\Program Files\nodejs\node.exe` version `22.14.0`, while the browser plugin requires Node `>=22.22.0`.
-- A newer Node exists at `C:\Program Files\WindowsApps\OpenAI.Codex_26.429.8261.0_x64__2p2nqsd0c76g0\app\resources\node.exe` and `NODE_REPL_NODE_PATH` was set for future sessions, but the already-running Node REPL service did not pick it up.
+- Apple Developer/App Store Connect browser navigation is blocked in this Codex Desktop session by a Browser Use app-server path error: `failed to start codex app-server: The system cannot find the path specified. (os error 3)`.
+- The earlier Node runtime blocker was cleared by updating the default Node runtime to v25.9.0.
 - The requested files `APP_STORE_CONNECT_NOW.md` and `LAUNCH_MASTER_PLAN.md` are not present in this local checkout.
 - `bash scripts_launch_preflight.sh` could not run through `bash` because `bash` is not on the default PowerShell path. The script file also was not present at repo root in the local file list.
 
 ## Notes for next session
 
-- Restart Codex Desktop so the Node REPL service can pick up `NODE_REPL_NODE_PATH`, then retry Browser Use against Apple Developer and App Store Connect.
-- Before tagging a TestFlight build, commit and push the local app source/workflow/Fastlane/docs directories to `vrk38303/Murmur`, or reconcile them with the intended remote branch.
+- Fix or restart the Codex Desktop Browser Use app-server integration, then retry Browser Use against Apple Developer and App Store Connect.
+- Merge PR #2 or tag its head commit before triggering TestFlight. The remote default branch still does not contain the app source until PR #2 is merged.
 - Do not submit to App Review or perform account/legal actions without explicit confirmation.
