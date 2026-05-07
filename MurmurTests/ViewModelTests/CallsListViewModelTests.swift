@@ -23,8 +23,9 @@ final class CallsListViewModelTests: XCTestCase {
     }
 
     func testRelativeWhenBuckets() {
-        let entity = CallEntity(title: "x", audioFileName: "x",
-                                startedAt: Date.now.addingTimeInterval(-3 * 3600))
+        let entity = CallEntity(title: "x",
+                                startedAt: Date.now.addingTimeInterval(-3 * 3600),
+                                audioFileName: "x")
         XCTAssertTrue(entity.relativeWhen.hasSuffix("h"))
     }
 }
